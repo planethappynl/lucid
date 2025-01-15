@@ -13,6 +13,7 @@ use Lucid\Testing\UnitMock;
 use Lucid\Testing\UnitMockRegistry;
 use Lucid\Units\Job;
 use Lucid\Units\Operation;
+use Lucid\Units\Unit;
 use ReflectionClass;
 use ReflectionException;
 
@@ -26,21 +27,28 @@ trait UnitDispatcher
      * laravel function dispatchFromArray.
      * When the $arguments is an instance of Request
      * it will call dispatchFrom instead.
+     *
+     * @template ResultType
+     * @param Unit<ResultType>|mixed $unit
+     * @return ResultType|mixed
+     *
+     * @throws ReflectionException
      */
     public function run(
-        mixed $unit,
+        mixed         $unit,
         array|Request $arguments = [],
-        array $extra = []
-    ): mixed {
-        if (is_object($unit) && ! App::runningUnitTests()) {
+        array         $extra = []
+    ): mixed
+    {
+        if (is_object($unit) && !App::runningUnitTests()) {
             $result = $this->dispatchSync($unit);
         } elseif ($arguments instanceof Request) {
             $result = $this->dispatchSync($this->marshal($unit, $arguments, $extra));
         } else {
-            if (! is_object($unit)) {
+            if (!is_object($unit)) {
                 $unit = $this->marshal($unit, new Collection(), $arguments);
 
-            // don't dispatch unit when in tests and have a mock for it.
+                // don't dispatch unit when in tests and have a mock for it.
             } elseif (App::runningUnitTests() && app(UnitMockRegistry::class)->has(get_class($unit))) {
                 /** @var UnitMock $mock */
                 $mock = app(UnitMockRegistry::class)->get(get_class($unit));
@@ -80,14 +88,15 @@ trait UnitDispatcher
      * @throws ReflectionException
      */
     public function runInQueue(
-        string $unit,
-        array $arguments = [],
+        string  $unit,
+        array   $arguments = [],
         ?string $queue = 'default'
-    ): mixed {
+    ): mixed
+    {
         // instantiate and queue the unit
         $reflection = new ReflectionClass($unit);
         $instance = $reflection->newInstanceArgs($arguments);
-        $instance->onQueue((string) $queue);
+        $instance->onQueue((string)$queue);
 
         return $this->dispatch($instance);
     }

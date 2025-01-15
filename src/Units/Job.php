@@ -10,8 +10,11 @@ use Lucid\Testing\MockMe;
  * means it will NOT be queued, rather
  * will have the "handle()" method
  * called instead.
+ *
+ * @template ReturnType
+ * @implements Unit<ReturnType>
  */
-abstract class Job
+abstract class Job implements Unit
 {
     use MockMe;
 }
