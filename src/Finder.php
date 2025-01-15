@@ -22,7 +22,7 @@ trait Finder
      */
     public function getSourceDirectoryName(): string
     {
-        return 'app';
+        return 'app/Application';
     }
 
     /**
@@ -30,7 +30,7 @@ trait Finder
      */
     public function isMicroservice(): bool
     {
-        return ! file_exists(base_path().DS.$this->getSourceDirectoryName().DS.'Services');
+        return ! file_exists(base_path().DS.$this->getSourceDirectoryName().DS.'Domain');
     }
 
     /**
@@ -79,7 +79,7 @@ trait Finder
     {
         $root = $this->findRootNamespace();
 
-        return (! $service) ? $root : "$root\\Services\\$service";
+        return (! $service) ? $root : "$root\\Domain\\$service";
     }
 
     /**
@@ -95,7 +95,7 @@ trait Finder
      */
     public function findServicesRootPath(): string
     {
-        return $this->getSourceRoot().DS.'Services';
+        return $this->getSourceRoot().DS.'Domain';
     }
 
     /**
@@ -144,7 +144,7 @@ trait Finder
         $root = $this->findFeatureTestsRootPath();
 
         if ($service) {
-            $root .= DS.'Services'.DS.$service;
+            $root .= DS.'Domain'.DS.$service;
         }
 
         return implode(DS, [$root, "$test.php"]);
@@ -177,7 +177,7 @@ trait Finder
         $namespace = $this->findFeatureTestsRootNamespace();
 
         if ($service) {
-            $namespace .= "\\Services\\$service";
+            $namespace .= "\\Domain\\$service";
         }
 
         return $namespace;
@@ -207,7 +207,7 @@ trait Finder
         $root = $this->findUnitTestsRootPath();
 
         if ($service) {
-            $root .= DS.'Services'.DS.$service;
+            $root .= DS.'Domain'.DS.$service;
         }
 
         return implode(DS, [$root, 'Operations', "$test.php"]);
@@ -233,7 +233,7 @@ trait Finder
         $namespace = $this->findUnitTestsRootNamespace();
 
         if ($service) {
-            $namespace .= "\\Services\\$service";
+            $namespace .= "\\Domain\\$service";
         }
 
         return $namespace.'\\Operations';
