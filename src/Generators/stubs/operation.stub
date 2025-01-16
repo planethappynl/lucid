@@ -3,7 +3,7 @@
 namespace {{namespace}};
 
 use {{unit_namespace}}\Operation;
-{{use_jobs}}
+{{use_actions}}
 class {{operation}} extends Operation
 {
     /**
@@ -23,6 +23,6 @@ class {{operation}} extends Operation
      */
     public function handle()
     {
-{{run_jobs}}
+{{run_actions}}
     }
 }

@@ -2,12 +2,12 @@
 
 namespace {{namespace}};
 
-use {{unit_namespace}}\Job;
+use {{unit_namespace}}\Action;
 
-class {{job}} extends Job
+class {{action}} extends Action
 {
     /**
-     * Create a new job instance.
+     * Create a new action instance.
      *
      * @return void
      */
@@ -17,7 +17,7 @@ class {{job}} extends Job
     }
 
     /**
-     * Execute the job.
+     * Execute the action.
      *
      * @return void
      */

@@ -4,11 +4,11 @@ namespace {{namespace}};
 
 use Illuminate\Http\Request;
 use {{unit_namespace}}\Feature;
-{{use_jobs}}
+{{use_actions}}
 class {{feature}} extends Feature
 {
     public function handle(Request $request)
     {
-{{run_jobs}}
+{{run_actions}}
     }
 }

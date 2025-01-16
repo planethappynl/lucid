@@ -3,11 +3,11 @@
 namespace {{namespace}};
 
 use Tests\TestCase;
-use {{job_namespace}};
+use {{action_namespace}};
 
 class {{testclass}} extends TestCase
 {
-    public function test_{{job}}()
+    public function test_{{action}}()
     {
         $this->markTestIncomplete();
     }

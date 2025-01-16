@@ -2,12 +2,12 @@
 
 namespace {{namespace}};
 
-use {{unit_namespace}}\QueueableJob;
+use {{unit_namespace}}\QueueableAction;
 
-class {{job}} extends QueueableJob
+class {{action}} extends QueueableAction
 {
     /**
-     * Create a new job instance.
+     * Create a new action instance.
      *
      * @return void
      */
@@ -17,7 +17,7 @@ class {{job}} extends QueueableJob
     }
 
     /**
-     * Execute the job.
+     * Execute the action.
      *
      * @return void
      */

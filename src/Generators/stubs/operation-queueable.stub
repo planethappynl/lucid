@@ -4,11 +4,11 @@ namespace {{namespace}};
 
 use {{unit_namespace}}\QueueableOperation;
 use Illuminate\Http\Request;
-{{use_jobs}}
+{{use_actions}}
 class {{operation}} extends QueueableOperation
 {
     public function handle(Request $request)
     {
-{{run_jobs}}
+{{run_actions}}
     }
 }
