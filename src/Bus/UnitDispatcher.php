@@ -5,6 +5,7 @@ namespace Lucid\Bus;
 use App;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Foundation\Bus\PendingDispatch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Lucid\Events\ActionStarted;
@@ -34,7 +35,7 @@ trait UnitDispatcher
      * @param Unit<ResultType>|class-string<Unit<ResultType>> $unit
      * @param array|Request $arguments
      * @param array $extra
-     * @return ResultType
+     * @return ResultType|PendingDispatch
      *
      * @throws ReflectionException
      * @throws ContainerExceptionInterface
@@ -46,34 +47,31 @@ trait UnitDispatcher
         array         $extra = []
     ): mixed
     {
-        if (is_object($unit) && !App::runningUnitTests()) {
-            $result = $this->dispatchSync($unit);
-        } elseif ($arguments instanceof Request) {
-            $result = $this->dispatchSync($this->marshal($unit, $arguments, $extra));
+        if ($arguments instanceof Request) {
+            $unit = $this->marshal($unit, $arguments, $extra);
+        } else if (!is_object($unit)) {
+            $unit = $this->marshal($unit, new Collection(), $arguments);
+        }
+
+        // don't dispatch unit when in tests and have a mock for it.
+        if (App::runningUnitTests() && app(UnitMockRegistry::class)->has(get_class($unit))) {
+            /** @var UnitMock $mock */
+            $mock = app(UnitMockRegistry::class)->get(get_class($unit));
+            $mock->compareTo($unit);
+
+            // Reaching this step confirms that the expected mock is similar to the passed instance, so we
+            // get the unit's mock counterpart to be dispatched. Otherwise, the previous step would
+            // throw an exception when the mock doesn't match the passed instance.
+            $unit = $this->marshal(
+                get_class($unit),
+                new Collection(),
+                $mock->getConstructorExpectationsForInstance($unit)
+            );
+        }
+
+        if ($unit instanceof ShouldQueue) {
+            $result = $this->dispatch($unit);
         } else {
-            if (!is_object($unit)) {
-                $unit = $this->marshal($unit, new Collection(), $arguments);
-
-                // don't dispatch unit when in tests and have a mock for it.
-            } elseif (App::runningUnitTests() && app(UnitMockRegistry::class)->has(get_class($unit))) {
-                /** @var UnitMock $mock */
-                $mock = app(UnitMockRegistry::class)->get(get_class($unit));
-                $mock->compareTo($unit);
-
-                // Reaching this step confirms that the expected mock is similar to the passed instance, so we
-                // get the unit's mock counterpart to be dispatched. Otherwise, the previous step would
-                // throw an exception when the mock doesn't match the passed instance.
-                $unit = $this->marshal(
-                    get_class($unit),
-                    new Collection(),
-                    $mock->getConstructorExpectationsForInstance($unit)
-                );
-            }
-
-            if ($unit instanceof ShouldQueue) {
-                return $this->dispatch($unit);
-            }
-
             $result = $this->dispatchSync($unit);
         }
 
