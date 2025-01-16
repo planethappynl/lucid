@@ -611,7 +611,7 @@ trait Finder
      */
     public function findRequestsPath(string $domain): string
     {
-        return $this->findDomainPath($domain) . DS . 'Requests';
+        return $this->findDomainPath($domain) . DS . 'Http' . DS . 'Requests';
     }
 
     /**
@@ -649,7 +649,7 @@ trait Finder
      */
     public function findRequestsNamespace(string $domain): string
     {
-        return $this->findDomainNamespace($domain) . '\\Requests';
+        return $this->findDomainNamespace($domain) . '\\Http\\Requests';
     }
 
     /**
