@@ -23,7 +23,7 @@ trait Finder
      */
     public function getSourceDirectoryName(): string
     {
-        return Config::get('lucid.source_directory', 'app');
+        return 'app/Application';
     }
 
     /**
@@ -80,7 +80,7 @@ trait Finder
     {
         $root = $this->findRootNamespace();
 
-        return (!$service) ? $root : "$root\\{$this->getServicesName()}\\$service";
+        return (!$service) ? $root : "{$this->getServicesName()}\\$service";
     }
 
     /**
@@ -93,7 +93,7 @@ trait Finder
 
     private function getServicesName(): string
     {
-        return Config::get('lucid.services_name', 'Services');
+        return 'Domain';
     }
 
     /**
@@ -101,7 +101,7 @@ trait Finder
      */
     public function findServicesRootPath(): string
     {
-        return  $this->getSourceRoot() . DS . $this->getServicesName();
+        return $this->getSourceRoot() . DS . $this->getServicesName();
     }
 
     /**
@@ -250,7 +250,7 @@ trait Finder
      */
     public function findDomainsRootPath(): string
     {
-        return $this->getSourceRoot() . DS . 'Domains';
+        return $this->getSourceRoot() . DS . $this->getServicesName();
     }
 
     /**
@@ -344,7 +344,7 @@ trait Finder
 
     private function getDomainsName(): string
     {
-        return Config::get('lucid.domains_name', 'Domains');
+        return 'Domain';
     }
 
     /**
@@ -354,7 +354,7 @@ trait Finder
      */
     public function findDomainNamespace(string $domain): string
     {
-        return $this->findRootNamespace() . '\\' . $this->getDomainsName() . '\\' . $domain;
+        return $this->getDomainsName() . '\\' . $domain;
     }
 
     /**
