@@ -2,6 +2,7 @@
 
 namespace Lucid\Bus;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Collection;
 use Lucid\Events\FeatureStarted;
@@ -19,11 +20,15 @@ trait ServesFeatures
     {
         if (!$feature instanceof Feature) {
             event(new FeatureStarted($feature, $arguments));
-
-            return $this->dispatchSync($this->marshal($feature, new Collection(), $arguments));
+            $job = $this->marshal($feature, new Collection(), $arguments);
+        } else {
+            event(new FeatureStarted($feature::class, $arguments));
+            $job = $feature;
         }
 
-        event(new FeatureStarted($feature::class, $arguments));
+        if ($job instanceof ShouldQueue) {
+            return $this->dispatch($job);
+        }
 
         return $this->dispatchSync($feature);
     }
