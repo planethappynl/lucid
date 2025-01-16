@@ -14,6 +14,8 @@ use Lucid\Testing\UnitMockRegistry;
 use Lucid\Units\Job;
 use Lucid\Units\Operation;
 use Lucid\Units\Unit;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 use ReflectionClass;
 use ReflectionException;
 
@@ -29,13 +31,17 @@ trait UnitDispatcher
      * it will call dispatchFrom instead.
      *
      * @template ResultType
-     * @param Unit<ResultType>|mixed $unit
-     * @return ResultType|mixed
+     * @param Unit<ResultType>|class-string<Unit<ResultType>> $unit
+     * @param array|Request $arguments
+     * @param array $extra
+     * @return ResultType
      *
      * @throws ReflectionException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     public function run(
-        mixed         $unit,
+        Unit|string   $unit,
         array|Request $arguments = [],
         array         $extra = []
     ): mixed
