@@ -78,22 +78,22 @@ it('returns feature name variation 4', function () {
     $this->assertEquals('CreateArticleFeature', Str::feature('CreateArticle'));
 });
 
-// Test cases for job()
+// Test cases for action()
 
-it('returns job name', function () {
-    $this->assertEquals('CreateArticleJob', Str::job('CreateArticleJob.php'));
+it('returns action name', function () {
+    $this->assertEquals('CreateArticleAction', Str::action('CreateArticleAction.php'));
 });
 
-it('returns job name variation 2', function () {
-    $this->assertEquals('CreateArticleJob', Str::job('Create Article Job'));
+it('returns action name variation 2', function () {
+    $this->assertEquals('CreateArticleAction', Str::action('Create Article Action'));
 });
 
-it('returns job name variation 3', function () {
-    $this->assertEquals('CreateArticleJob', Str::job('Create Article'));
+it('returns action name variation 3', function () {
+    $this->assertEquals('CreateArticleAction', Str::action('Create Article'));
 });
 
-it('returns job name variation 4', function () {
-    $this->assertEquals('CreateArticleJob', Str::job('CreateArticle'));
+it('returns action name variation 4', function () {
+    $this->assertEquals('CreateArticleAction', Str::action('CreateArticle'));
 });
 
 // Test cases for operation()
