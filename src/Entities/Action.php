@@ -12,7 +12,7 @@ namespace Lucid\Entities;
  * @property-read string $domain
  * @property-read string $content
  */
-class Job extends Entity
+class Action extends Entity
 {
     public function __construct(
         string $title,
@@ -25,7 +25,7 @@ class Job extends Entity
     ) {
         $this->setAttributes([
             'title' => $title,
-            'className' => str_replace(' ', '', $title).'Job',
+            'className' => str_replace(' ', '', $title).'Action',
             'namespace' => $namespace,
             'file' => $file,
             'realPath' => $path,

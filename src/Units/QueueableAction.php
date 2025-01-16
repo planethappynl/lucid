@@ -8,10 +8,10 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * An abstract Job that can be managed with a queue
- * when extended the job will be queued by default.
+ * An abstract Action that can be managed with a queue
+ * when extended the action will be queued by default.
  */
-class QueueableJob extends Job implements ShouldQueue
+class QueueableAction extends Action implements ShouldQueue
 {
     use SerializesModels;
     use InteractsWithQueue;

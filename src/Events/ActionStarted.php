@@ -2,7 +2,7 @@
 
 namespace Lucid\Events;
 
-class JobStarted
+class ActionStarted
 {
     public string $name;
 

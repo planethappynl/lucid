@@ -1,11 +1,11 @@
 <?php
 
-namespace Lucid\Domains\Http\Jobs;
+namespace Lucid\Domains\Http\Actions;
 
 use Illuminate\Routing\ResponseFactory;
-use Lucid\Units\Job;
+use Lucid\Units\Action;
 
-class RespondWithJsonJob extends Job
+class RespondWithJsonAction extends Action
 {
     protected mixed $content;
 

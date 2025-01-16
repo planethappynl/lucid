@@ -15,7 +15,7 @@ class OperationGenerator extends Generator
         string $operation,
         ?string $service,
         bool $isQueueable = false,
-        array $jobs = []
+        array $actions = []
     ): Operation {
         $operation = Str::operation($operation);
         $service = Str::service($service);
@@ -30,11 +30,11 @@ class OperationGenerator extends Generator
 
         $content = file_get_contents($this->getStub($isQueueable));
 
-        [$useJobs, $runJobs] = self::getUsesAndRunners($jobs);
+        [$useActions, $runActions] = self::getUsesAndRunners($actions);
 
         $content = str_replace(
-            ['{{operation}}', '{{namespace}}', '{{unit_namespace}}', '{{use_jobs}}', '{{run_jobs}}'],
-            [$operation, $namespace, $this->findUnitNamespace(), $useJobs, $runJobs],
+            ['{{operation}}', '{{namespace}}', '{{unit_namespace}}', '{{use_actions}}', '{{run_actions}}'],
+            [$operation, $namespace, $this->findUnitNamespace(), $useActions, $runActions],
             $content ?: ''
         );
 
@@ -99,36 +99,36 @@ class OperationGenerator extends Generator
 
     /**
      * Get de use to import the right class
-     * Get de job run command
+     * Get de action run command
      */
-    private static function getUseAndJobRunCommand(string $job): array
+    private static function getUseAndActionRunCommand(string $action): array
     {
-        $str = Str::replaceLast('\\', '#', $job);
+        $str = Str::replaceLast('\\', '#', $action);
         $explode = explode('#', $str);
 
         $use = 'use '.$explode[0].'\\'.$explode['1'].";\n";
-        $runJobs = "\t\t".'$this->run('.$explode['1'].'::class);';
+        $runActions = "\t\t".'$this->run('.$explode['1'].'::class);';
 
-        return [$use, $runJobs];
+        return [$use, $runActions];
     }
 
     /**
      * Returns all users and all $this->run() generated
      */
-    private static function getUsesAndRunners(array $jobs): array
+    private static function getUsesAndRunners(array $actions): array
     {
-        $useJobs = '';
-        $runJobs = '';
-        foreach ($jobs as $index => $job) {
-            [$useLine, $runLine] = self::getUseAndJobRunCommand($job);
-            $useJobs .= $useLine;
-            $runJobs .= $runLine;
-            // only add carriage returns when it's not the last job
-            if ($index != count($jobs) - 1) {
-                $runJobs .= "\n\n";
+        $useActions = '';
+        $runActions = '';
+        foreach ($actions as $index => $action) {
+            [$useLine, $runLine] = self::getUseAndActionRunCommand($action);
+            $useActions .= $useLine;
+            $runActions .= $runLine;
+            // only add carriage returns when it's not the last action
+            if ($index != count($actions) - 1) {
+                $runActions .= "\n\n";
             }
         }
 
-        return [$useJobs, $runJobs];
+        return [$useActions, $runActions];
     }
 }

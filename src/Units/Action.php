@@ -5,8 +5,8 @@ namespace Lucid\Units;
 use Lucid\Testing\MockMe;
 
 /**
- * An abstract Job to be extended by every job.
- * Note that this job is self-handling which
+ * An abstract Action to be extended by every action.
+ * Note that this action is self-handling which
  * means it will NOT be queued, rather
  * will have the "handle()" method
  * called instead.
@@ -14,7 +14,7 @@ use Lucid\Testing\MockMe;
  * @template ReturnType
  * @implements Unit<ReturnType>
  */
-abstract class Job implements Unit
+abstract class Action implements Unit
 {
     use MockMe;
 }

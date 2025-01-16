@@ -4,7 +4,7 @@ namespace Lucid;
 
 use Lucid\Entities\Domain;
 use Lucid\Entities\Feature;
-use Lucid\Entities\Job;
+use Lucid\Entities\Action;
 
 class Parser
 {
@@ -17,23 +17,23 @@ class Parser
     const SYNTAX_INSTANTIATION = 'init';
 
     /**
-     * Get the list of jobs for the given feature.
+     * Get the list of actions for the given feature.
      */
-    public function parseFeatureJobs(Feature $feature): array
+    public function parseFeatureActions(Feature $feature): array
     {
         $contents = file_get_contents($feature->realPath);
 
         $body = explode("\n", $this->parseFunctionBody($contents, 'handle'));
 
-        $jobs = [];
+        $actions = [];
         foreach ($body as $line) {
-            $job = $this->parseJobInLine($line, $contents);
-            if ($job !== null) {
-                $jobs[] = $job;
+            $action = $this->parseActionInLine($line, $contents);
+            if ($action !== null) {
+                $actions[] = $action;
             }
         }
 
-        return $jobs;
+        return $actions;
     }
 
     public function parseFunctionBody($contents, $function): string
@@ -71,35 +71,35 @@ class Parser
     }
 
     /**
-     * Parses the job class out of the given line of code.
+     * Parses the action class out of the given line of code.
      *
      * @throws \Exception
      */
-    public function parseJobInLine(string $line, string $contents): ?Job
+    public function parseActionInLine(string $line, string $contents): ?Action
     {
         $line = trim($line);
-        // match the line that potentially has the job,
-        // they're usually called by "$this->run(Job...)"
+        // match the line that potentially has the action,
+        // they're usually called by "$this->run(Action...)"
         preg_match('/->run\(([^,]*),?.*\)?/i', $line, $match);
 
-        // we won't do anything if no job has been matched.
+        // we won't do anything if no action has been matched.
         if (empty($match)) {
             return null;
         }
 
         $match = $match[1];
         // prepare for parsing
-        $match = $this->filterJobMatch($match);
+        $match = $this->filterActionMatch($match);
 
         $name = $namespace = '';
 
         /*
-        * determine syntax style and afterwards detect how the job
+        * determine syntax style and afterwards detect how the action
         * class name was put into the "run" method as a parameter.
         *
         * Following are the different ways this might occur:
         *
-        * 	- ValidateArticleInputJob::class
+        * 	- ValidateArticleInputAction::class
         * 		The class name has been imported with a 'use' statement
         * 		and uses the ::class keyword.
         * 	- \Fully\Qualified\Namespace::class
@@ -114,21 +114,21 @@ class Parser
         * 	- new ImportedClass
         * 		Instantiation without parameters nor parentheses.
         */
-        switch ($this->jobSyntaxStyle($match)) {
+        switch ($this->actionSyntaxStyle($match)) {
             case self::SYNTAX_STRING:
-                [$name, $namespace] = $this->parseStringJobSyntax($match, $contents);
+                [$name, $namespace] = $this->parseStringActionSyntax($match, $contents);
                 break;
 
             case self::SYNTAX_KEYWORD:
-                [$name, $namespace] = $this->parseKeywordJobSyntax($match, $contents);
+                [$name, $namespace] = $this->parseKeywordActionSyntax($match, $contents);
                 break;
 
             case self::SYNTAX_INSTANTIATION:
-                [$name, $namespace] = $this->parseInitJobSyntax($match, $contents);
+                [$name, $namespace] = $this->parseInitActionSyntax($match, $contents);
                 break;
         }
 
-        $domainName = $this->domainForJob($namespace);
+        $domainName = $this->domainForAction($namespace);
 
         $domain = new Domain(
             $domainName,
@@ -137,9 +137,9 @@ class Parser
             $this->relativeFromReal($domainPath)
         );
 
-        $path = $this->findJobPath($domainName, $name);
+        $path = $this->findActionPath($domainName, $name);
 
-        return new Job(
+        return new Action(
             $name,
             $namespace,
             basename($path),
@@ -150,9 +150,9 @@ class Parser
     }
 
     /**
-     * Parse the given job class written in the string syntax: 'Some\Domain\Job'
+     * Parse the given action class written in the string syntax: 'Some\Domain\Action'
      */
-    private function parseStringJobSyntax(string $match, string $contents): array
+    private function parseStringActionSyntax(string $match, string $contents): array
     {
         $slash = strrpos($match, '\\');
         if ($slash !== false) {
@@ -166,9 +166,9 @@ class Parser
     }
 
     /**
-     * Parse the given job class written in the ::class keyword syntax:	SomeJob::class
+     * Parse the given action class written in the ::class keyword syntax:	SomeAction::class
      */
-    private function parseKeywordJobSyntax(string $match, string $contents): array
+    private function parseKeywordActionSyntax(string $match, string $contents): array
     {
         // is it of the form \Full\Name\Space::class?
         // (using full namespace in-line)
@@ -192,15 +192,15 @@ class Parser
     }
 
     /**
-     * Parse the given job class written in the ini syntax:	new SomeJob()
+     * Parse the given action class written in the ini syntax:	new SomeAction()
      */
-    private function parseInitJobSyntax(string $match, string $contents): array
+    private function parseInitActionSyntax(string $match, string $contents): array
     {
         // remove the 'new ' from the beginning.
         $match = str_replace('new ', '', $match);
 
-        // match the job's class name
-        preg_match('/(.*Job).*[\);]?/', $match, $name);
+        // match the action's class name
+        preg_match('/(.*Action).*[\);]?/', $match, $name);
         $name = $name[1];
 
         // Determine Namespace
@@ -222,11 +222,11 @@ class Parser
     }
 
     /**
-     * Get the domain for the given job's namespace.
+     * Get the domain for the given action's namespace.
      */
-    private function domainForJob(string $namespace): string
+    private function domainForAction(string $namespace): string
     {
-        preg_match('/Domains\\\([^\\\]*)\\\Jobs/', $namespace, $domain);
+        preg_match('/Domains\\\([^\\\]*)\\\Actions/', $namespace, $domain);
 
         return (! empty($domain)) ? $domain[1] : '';
     }
@@ -234,7 +234,7 @@ class Parser
     /**
      * Filter the matched line in preparation for parsing.
      */
-    private function filterJobMatch(string $match): string
+    private function filterActionMatch(string $match): string
     {
         // we don't want any quotes
         return str_replace(['"', "'"], '', $match);
@@ -244,11 +244,11 @@ class Parser
      * Determine the syntax style of the class name.
      * There are three styles possible:
      *
-     * 	- Using the 'TheJob::class' keyword
-     * 	- Using instantiation: new TheJob(...)
-     * 	- Using a string with the full namespace: '\Domain\TheJob'
+     * 	- Using the 'TheAction::class' keyword
+     * 	- Using instantiation: new TheAction(...)
+     * 	- Using a string with the full namespace: '\Domain\TheAction'
      */
-    private function jobSyntaxStyle(string $match): string
+    private function actionSyntaxStyle(string $match): string
     {
         if (str_contains($match, '::class')) {
             $style = self::SYNTAX_KEYWORD;

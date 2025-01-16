@@ -11,7 +11,7 @@ class FeatureGenerator extends Generator
     /**
      * @throws Exception
      */
-    public function generate(string $feature, ?string $service, array $jobs = []): Feature
+    public function generate(string $feature, ?string $service, array $actions = []): Feature
     {
         $feature = Str::feature($feature);
         $service = Str::service($service);
@@ -27,22 +27,22 @@ class FeatureGenerator extends Generator
 
         $content = file_get_contents($this->getStub());
 
-        $useJobs = ''; // stores the `use` statements of the jobs
-        $runJobs = ''; // stores the `$this->run` statements of the jobs
+        $useActions = ''; // stores the `use` statements of the actions
+        $runActions = ''; // stores the `$this->run` statements of the actions
 
-        foreach ($jobs as $index => $job) {
-            $useJobs .= 'use '.$job['namespace'].'\\'.$job['className'].";\n";
-            $runJobs .= "\t\t".'$this->run('.$job['className'].'::class);';
+        foreach ($actions as $index => $action) {
+            $useActions .= 'use '.$action['namespace'].'\\'.$action['className'].";\n";
+            $runActions .= "\t\t".'$this->run('.$action['className'].'::class);';
 
-            // only add carriage returns when it's not the last job
-            if ($index != count($jobs) - 1) {
-                $runJobs .= "\n\n";
+            // only add carriage returns when it's not the last action
+            if ($index != count($actions) - 1) {
+                $runActions .= "\n\n";
             }
         }
 
         $content = str_replace(
-            ['{{feature}}', '{{namespace}}', '{{unit_namespace}}', '{{use_jobs}}', '{{run_jobs}}'],
-            [$classname, $namespace, $this->findUnitNamespace(), $useJobs, $runJobs],
+            ['{{feature}}', '{{namespace}}', '{{unit_namespace}}', '{{use_actions}}', '{{run_actions}}'],
+            [$classname, $namespace, $this->findUnitNamespace(), $useActions, $runActions],
             $content ?: ''
         );
 

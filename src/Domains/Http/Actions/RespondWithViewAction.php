@@ -1,11 +1,11 @@
 <?php
 
-namespace Lucid\Domains\Http\Jobs;
+namespace Lucid\Domains\Http\Actions;
 
 use Illuminate\Routing\ResponseFactory;
-use Lucid\Units\Job;
+use Lucid\Units\Action;
 
-class RespondWithViewJob extends Job
+class RespondWithViewAction extends Action
 {
     protected array|string $template;
 

@@ -84,15 +84,15 @@ class Str
     }
 
     /**
-     * Get the given name formatted as a job.
+     * Get the given name formatted as a action.
      *
-     * 	i.e. "Create Post", "CreatePostJob.php", "createPost",
-     * 	and many other forms will be transformed to "CreatePostJob" which is
-     * 	the standard job class name.
+     * 	i.e. "Create Post", "CreatePostAction.php", "createPost",
+     * 	and many other forms will be transformed to "CreatePostAction" which is
+     * 	the standard action class name.
      */
-    public static function job(string $name): string
+    public static function action(string $name): string
     {
-        return self::studly(preg_replace('/Job(\.php)?$/', '', $name).'Job');
+        return self::studly(preg_replace('/Action(\.php)?$/', '', $name).'Action');
     }
 
     /**

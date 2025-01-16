@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Config;
 use InvalidArgumentException;
 use Lucid\Entities\Domain;
 use Lucid\Entities\Feature;
-use Lucid\Entities\Job;
+use Lucid\Entities\Action;
 use Lucid\Entities\Service;
 use Symfony\Component\Finder\Finder as SymfonyFinder;
 
@@ -292,33 +292,33 @@ trait Finder
     }
 
     /**
-     * List the jobs per domain,
-     * optionally provide a domain name to list its jobs.
+     * List the actions per domain,
+     * optionally provide a domain name to list its actions.
      *
      * @throws Exception
      */
-    public function listJobs(?string $domainName = null): Collection
+    public function listActions(?string $domainName = null): Collection
     {
         $domains = ($domainName) ? [$this->findDomain(Str::domain($domainName))] : $this->listDomains();
 
-        $jobs = new Collection();
+        $actions = new Collection();
         foreach ($domains as $domain) {
             $path = $domain->realPath;
 
             $finder = new SymfonyFinder();
             $files = $finder
-                ->name('*Job.php')
-                ->in($path . DS . 'Jobs')
+                ->name('*Action.php')
+                ->in($path . DS . 'Actions')
                 ->files();
 
             /** @phpstan-ignore-next-line */
-            $jobs[$domain->name] = new Collection();
+            $actions[$domain->name] = new Collection();
 
             foreach ($files as $file) {
                 $name = $file->getRelativePathName();
-                $job = new Job(
-                    Str::realName($name, '/Job.php/'),
-                    $this->findDomainJobsNamespace($domain->name),
+                $action = new Action(
+                    Str::realName($name, '/Action.php/'),
+                    $this->findDomainActionsNamespace($domain->name),
                     $name,
                     $file->getRealPath(),
                     $this->relativeFromReal($file->getRealPath()),
@@ -327,19 +327,19 @@ trait Finder
                 );
 
                 /** @phpstan-ignore-next-line */
-                $jobs[$domain->name]->push($job);
+                $actions[$domain->name]->push($action);
             }
         }
 
-        return $jobs;
+        return $actions;
     }
 
     /**
-     * Find the path for the given job name.
+     * Find the path for the given action name.
      */
-    public function findJobPath(string $domain, string $job): string
+    public function findActionPath(string $domain, string $action): string
     {
-        return $this->findDomainPath($domain) . DS . 'Jobs' . DS . $job . '.php';
+        return $this->findDomainPath($domain) . DS . 'Actions' . DS . $action . '.php';
     }
 
     private function getDomainsName(): string
@@ -358,23 +358,23 @@ trait Finder
     }
 
     /**
-     * Find the namespace for the given domain's Jobs.
+     * Find the namespace for the given domain's Actions.
      *
      * @throws Exception
      */
-    public function findDomainJobsNamespace(string $domain): string
+    public function findDomainActionsNamespace(string $domain): string
     {
-        return $this->findDomainNamespace($domain) . '\Jobs';
+        return $this->findDomainNamespace($domain) . '\Actions';
     }
 
     /**
-     * Find the namespace for the given domain's Jobs.
+     * Find the namespace for the given domain's Actions.
      *
      * @throws Exception
      */
-    public function findDomainJobsTestsNamespace(string $domain): string
+    public function findDomainActionsTestsNamespace(string $domain): string
     {
-        return $this->findUnitTestsRootNamespace() . "\\{$this->getDomainsName()}\\$domain\\Jobs";
+        return $this->findUnitTestsRootNamespace() . "\\{$this->getDomainsName()}\\$domain\\Actions";
     }
 
     /**
@@ -386,11 +386,11 @@ trait Finder
     }
 
     /**
-     * Find the test path for the given job.
+     * Find the test path for the given action.
      */
-    public function findJobTestPath(string $domain, string $jobTest): string
+    public function findActionTestPath(string $domain, string $actionTest): string
     {
-        return $this->findDomainTestsPath($domain) . DS . 'Jobs' . DS . "$jobTest.php";
+        return $this->findDomainTestsPath($domain) . DS . 'Actions' . DS . "$actionTest.php";
     }
 
     /**
@@ -509,9 +509,9 @@ trait Finder
      *
      * @throws Exception
      */
-    public function findJob(string $name): Job
+    public function findAction(string $name): Action
     {
-        $name = Str::job($name);
+        $name = Str::action($name);
         $fileName = "$name.php";
 
         $finder = new SymfonyFinder();
@@ -522,9 +522,9 @@ trait Finder
             $domain = $this->findDomain($domainName);
             $content = file_get_contents($path);
 
-            return new Job(
-                Str::realName($name, '/Job/'),
-                $this->findDomainJobsNamespace($domainName),
+            return new Action(
+                Str::realName($name, '/Action/'),
+                $this->findDomainActionsNamespace($domainName),
                 $fileName,
                 $path,
                 $this->relativeFromReal($path),
@@ -533,7 +533,7 @@ trait Finder
             );
         }
 
-        throw new Exception('Job "' . $name . '" could not be found.');
+        throw new Exception('Action "' . $name . '" could not be found.');
     }
 
     /**

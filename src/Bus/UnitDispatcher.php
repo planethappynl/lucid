@@ -7,11 +7,11 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Lucid\Events\JobStarted;
+use Lucid\Events\ActionStarted;
 use Lucid\Events\OperationStarted;
 use Lucid\Testing\UnitMock;
 use Lucid\Testing\UnitMockRegistry;
-use Lucid\Units\Job;
+use Lucid\Units\Action;
 use Lucid\Units\Operation;
 use Lucid\Units\Unit;
 use Psr\Container\ContainerExceptionInterface;
@@ -81,8 +81,8 @@ trait UnitDispatcher
             event(new OperationStarted(get_class($unit), $arguments));
         }
 
-        if ($unit instanceof Job) {
-            event(new JobStarted(get_class($unit), $arguments));
+        if ($unit instanceof Action) {
+            event(new ActionStarted(get_class($unit), $arguments));
         }
 
         return $result;

@@ -26,23 +26,23 @@ trait InitCommandTrait
 
         $this->info('');
 
-        $this->info('Or a job to do a single thing');
-        $this->comment('lucid make:job GetUserByEmail User');
-        $this->info('will generate <fg=cyan>app/Domains/User/Jobs/GetUserByEmailJob.php</>');
+        $this->info('Or a action to do a single thing');
+        $this->comment('lucid make:action GetUserByEmail User');
+        $this->info('will generate <fg=cyan>app/Domains/User/Actions/GetUserByEmailAction.php</>');
         $this->info('');
-        $this->info('For more Job examples check out Lucid\'s built-in jobs:');
-        $this->comment('- Lucid\Domains\Http\Jobs\RespondWithJsonJob');
+        $this->info('For more Action examples check out Lucid\'s built-in actions:');
+        $this->comment('- Lucid\Domains\Http\Actions\RespondWithJsonAction');
         $this->info('for consistent JSON structure responses.');
         $this->info('');
-        $this->comment('- Lucid\Domains\Http\Jobs\RespondWithJsonErrorJob');
+        $this->comment('- Lucid\Domains\Http\Actions\RespondWithJsonErrorAction');
         $this->info('for consistent JSON error responses.');
         $this->info('');
-        $this->comment('- Lucid\Domains\Http\Jobs\RespondWithViewJob');
+        $this->comment('- Lucid\Domains\Http\Actions\RespondWithViewAction');
         $this->info('basic view and data response functionality.');
 
         $this->info('');
 
-        $this->info('Finally you can group multiple jobs in an operation');
+        $this->info('Finally you can group multiple actions in an operation');
         $this->comment("lucid make:operation ProcessUserLogin $service");
 
         if ($service) {
